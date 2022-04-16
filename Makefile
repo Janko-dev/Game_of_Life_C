@@ -5,5 +5,5 @@ IN = game.c main.c
 OUT = -o out
 
 default:
-	$(CC) $(IN) $(OUT) $(CFLAGS) 
+	$(CC) $(IN) $(OUT) $(CFLAGS) -lm
 	./out

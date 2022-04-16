@@ -2,6 +2,7 @@
 #define GAME_OF_LIFE
 
 #include <SDL2/SDL.h>
+#include <math.h>
 
 #define CWIDTH 100
 #define CHEIGHT 100

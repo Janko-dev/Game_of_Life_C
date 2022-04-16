@@ -1,5 +1,6 @@
 #include "game.h"
 
+#define INDEX(x, y) ((y)+(x)*CWIDTH)
 
 void draw(State* state){
     SDL_SetRenderDrawColor(state->rend, 255, 255, 255, 255);
@@ -22,28 +23,52 @@ void draw(State* state){
 }
 
 void update(State* state){
-    Cell* newcells = (Cell*)malloc(sizeof(Cell) * CWIDTH * CHEIGHT);
-    for (size_t i = 0; i < CWIDTH*CHEIGHT; ++i){
-        unsigned char total = 0;
+    Cell* newcells = (Cell*)calloc(sizeof(Cell), CWIDTH * CHEIGHT);
 
-        // if (i % CWIDTH == 0 | ((i >= 0) & (i < CWIDTH)) | (i+CWIDTH-1) % CWIDTH == 0 | ((i < CWIDTH*CHEIGHT) & (i >= (CWIDTH*CHEIGHT-CWIDTH)))) 
-        //         continue;
-        for (int x = -1; x < 2; x++){
-            if ((i-CWIDTH+x < 0) | (i-CWIDTH+x > CWIDTH*CHEIGHT)) continue;
-            total += state->cells[i-CWIDTH+x].isAlive;
-            if (x != 0) total += state->cells[i+x].isAlive;
-            total += state->cells[i+CWIDTH+x].isAlive;
-        }
-
-        if (total < 2) newcells[i].isAlive = 0;
-        if (total >= 4) newcells[i].isAlive = 0;
-        if ((total == 2) | (total == 3)) newcells[i].isAlive = 1;
-        newcells[i].x = i/CWIDTH;
-        newcells[i].y = i%CHEIGHT;
+    for (int i = 0; i < CWIDTH; ++i){
+        for (int j = 0; j < CHEIGHT; ++j){
+            unsigned char total = 0;
+            for (int x = -1; x < 2; x++){
+                for (int y = -1; y < 2; y++){
+                    if ((x == 0 && y == 0) || 
+                    i+x < 0 || i+x > CWIDTH-1 ||
+                    j+y < 0 || j+y > CHEIGHT-1) continue;
+                    
+                    total += state->cells[INDEX(i+x, j+y)].isAlive;
+                    //printf("isalive (%d, %d) index (%d): %d\n", i+x, j+y, INDEX(i+x, j+y), state->cells[INDEX(i+x, j+y)].isAlive);
+                }
+            }
+            // printf("total (%d, %d): %d\n", i, j, total);
+            if (total < 2) newcells[INDEX(i, j)].isAlive = 0;
+            if (total >= 4) newcells[INDEX(i, j)].isAlive = 0;
+            if ((total == 2) || (total == 3)) newcells[INDEX(i, j)].isAlive = 1;
+            newcells[INDEX(i, j)].x = i;
+            newcells[INDEX(i, j)].y = j;
+        }    
     }
 
+    // for (size_t i = 0; i < CWIDTH*CHEIGHT; ++i){
+    //     unsigned char total = 0;
+
+    //     // if (i % CWIDTH == 0 | ((i >= 0) & (i < CWIDTH)) | (i+CWIDTH-1) % CWIDTH == 0 | ((i < CWIDTH*CHEIGHT) & (i >= (CWIDTH*CHEIGHT-CWIDTH)))) 
+    //     //         continue;
+    //     for (int x = -1; x < 2; x++){
+    //         if ((i-CWIDTH+x < 0) || (i-CWIDTH+x > CWIDTH*CHEIGHT)) continue;
+    //         total += state->cells[i-CWIDTH+x].isAlive;
+    //         if (x != 0) total += state->cells[i+x].isAlive;
+    //         total += state->cells[i+CWIDTH+x].isAlive;
+    //     }
+
+    //     if (total < 2) newcells[i].isAlive = 0;
+    //     if (total >= 4) newcells[i].isAlive = 0;
+    //     if ((total == 2) || (total == 3)) newcells[i].isAlive = 1;
+    //     newcells[i].x = i/CWIDTH;
+    //     newcells[i].y = i%CHEIGHT;
+    // }
+    free(state->cells);
     state->cells = newcells;
 
+    //state->isRunning = 0;
     // (0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1)
 
     // 0  1  2  3  4  5  6  7 
