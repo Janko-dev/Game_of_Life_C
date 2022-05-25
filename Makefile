@@ -2,8 +2,10 @@
 CC = gcc
 CFLAGS = -Wall -g `pkg-config --cflags --libs sdl2`
 IN = game.c main.c
-OUT = -o out
+OUT = -o gol
 
 default:
 	$(CC) $(IN) $(OUT) $(CFLAGS) -lm
-	./out
+
+debug: default
+	./gol

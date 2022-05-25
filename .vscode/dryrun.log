@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/jan/dev/game_of_life'
+gcc game.c main.c -o gol -Wall -g `pkg-config --cflags --libs sdl2` -lm
+make: Leaving directory '/home/jan/dev/game_of_life'
+ 
